@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Attendance Dashboard</title>
+</head>
+<body style="font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9;">
+
+  <h1 style="text-align:center; color: #333;">📊 Attendance Dashboard</h1>
+
+  <!-- Summary Section -->
+  <div style="margin-bottom: 30px;">
+    <table cellspacing="0" cellpadding="12" style="width: 100%; border-collapse: collapse; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+      <tr style="background-color: #4CAF50; color: white;">
+        <th>Student Name</th>
+        <th>Total Classes</th>
+        <th>Attended</th>
+        <th>Absent</th>
+        <th>Attendance %</th>
+      </tr>
+      <tr style="background: #fff;">
+        <td>Student A</td>
+        <td>30</td>
+        <td>27</td>
+        <td>3</td>
+        <td style="color: green; font-weight: bold;">90%</td>
+      </tr>
+      <tr style="background: #f2f2f2;">
+        <td>Student B</td>
+        <td>30</td>
+        <td>22</td>
+        <td>8</td>
+        <td style="color: orange; font-weight: bold;">73%</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Analysis Section -->
+  <div style="margin-bottom: 30px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+    <h2 style="color: #333;">📈 Attendance Analysis</h2>
+    <p><b style="color: green;">Student A:</b> Excellent attendance, maintaining above 85%.</p>
+    <p><b style="color: orange;">Student B:</b> Needs improvement. Attendance below 75% may affect performance.</p>
+  </div>
+
+  <!-- Dashboard Indicators -->
+  <div style="display: flex; gap: 20px;">
+    
+    <!-- Student A Card -->
+    <div style="flex: 1; text-align: center; background: #e8f5e9; padding: 20px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+      <h3>Student A</h3>
+      <p style="font-size: 18px; color: green;">✅ Good Attendance</p>
+      <!-- Progress Bar -->
+      <div style="background: #ddd; border-radius: 20px; height: 20px; width: 80%; margin: auto;">
+        <div style="background: green; width: 90%; height: 100%; border-radius: 20px;"></div>
+      </div>
+    </div>
+
+    <!-- Student B Card -->
+    <div style="flex: 1; text-align: center; background: #fff3e0; padding: 20px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+      <h3>Student B</h3>
+      <p style="font-size: 18px; color: orange;">⚠ Needs Improvement</p>
+      <!-- Progress Bar -->
+      <div style="background: #ddd; border-radius: 20px; height: 20px; width: 80%; margin: auto;">
+        <div style="background: orange; width: 73%; height: 100%; border-radius: 20px;"></div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

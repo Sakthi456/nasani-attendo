@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #eef3f9;
+      color: #333;
+    }
+
+    /* Navbar */
+    nav {
+      background: #0f5c90;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    nav h2 { margin: 0; }
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      gap: 20px;
+    }
+    nav ul li {
+      display: inline;
+    }
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s ease;
+    }
+    nav ul li a:hover {
+      color: #ffcc00;
+    }
+
+    /* Page Heading */
+    h1 { 
+      text-align: center; 
+      margin-top: 30px;
+      animation: fadeInDown 1s ease;
+    }
+
+    /* Webcam & Canvas */
+    video, canvas {
+      display: block;
+      margin: 15px auto;
+      border: 3px solid #0f5c90;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      animation: fadeIn 1s ease;
+    }
+
+    /* Buttons */
+    button {
+      display: inline-block;
+      margin: 10px;
+      padding: 12px 25px;
+      background: linear-gradient(135deg, #0f5c90, #1d9fcf);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 15px;
+      transition: transform 0.2s, background 0.3s;
+    }
+    button:hover {
+      background: linear-gradient(135deg, #1d9fcf, #0f5c90);
+      transform: scale(1.05);
+    }
+
+    input {
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    /* Records Section */
+    #records {
+      margin: 40px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      width: 90%;
+      animation: fadeInUp 1s ease;
+    }
+
+    #records h2 {
+      margin-top: 0;
+      text-align: center;
+      color: #0f5c90;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      animation: fadeIn 1.2s ease;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background: #0f5c90;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background: #f9f9f9;
+    }
+    tr:hover {
+      background: #e0f4ff;
+      transition: 0.3s;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav>
+    <h2>Attendo</h2>
+    <ul>
+      <form action="home.html" method="get">       
+                <div class="btn" onclick="location.href='home.html'">home</div>
+      </form>
+      <li><a href="#">Register</a></li>
+      <li><a href="#">Mark Attendance</a></li>
+      <li><a href="#">Records</a></li>
+    </ul>
+  </nav>
+
+  <h1>Attendance with Face Recognition</h1>
+
+  <!-- Webcam Stream -->
+  <video id="video" width="320" height="240" autoplay></video>
+  <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+
+  <!-- Register Face -->
+  <div style="text-align:center;">
+    <input type="text" id="regName" placeholder="Enter your name">
+    <button onclick="registerFace()">Register Face</button>
+  </div>
+
+  <!-- Mark Attendance -->
+  <div style="text-align:center;">
+    <button onclick="markAttendance()">Mark Attendance</button>
+  </div>
+
+  <!-- Attendance Records -->
+  <div id="records">
+    <h2>Attendance Records</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Time</th>
+          <th>Latitude</th>
+          <th>Longitude</th>
+          <th>Confidence</th>
+        </tr>
+      </thead>
+      <tbody id="recordBody"></tbody>
+    </table>
+  </div>
+
+<script>
+  const video = document.getElementById("video");
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+
+  // Start webcam
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => { video.srcObject = stream; })
+    .catch(err => console.error("Webcam error:", err));
+
+  // Capture image
+  function captureImage() {
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    return new Promise(resolve => {
+      canvas.toBlob(blob => resolve(blob), "image/jpeg");
+    });
+  }
+
+  // Register face
+  async function registerFace() {
+    const name = document.getElementById("regName").value;
+    if (!name) {
+      alert("Enter a name first!");
+      return;
+    }
+    const imageBlob = await captureImage();
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("image", imageBlob, "capture.jpg");
+
+    const res = await fetch("/register_face", { method: "POST", body: formData });
+    const data = await res.json();
+    alert(data.message);
+  }
+
+  // Mark attendance
+  async function markAttendance() {
+    const imageBlob = await captureImage();
+    const formData = new FormData();
+    formData.append("image", imageBlob, "capture.jpg");
+
+    navigator.geolocation.getCurrentPosition(async pos => {
+      formData.append("latitude", pos.coords.latitude);
+      formData.append("longitude", pos.coords.longitude);
+
+      const res = await fetch("/mark_attendance", { method: "POST", body: formData });
+      const data = await res.json();
+      alert(data.message);
+      loadRecords();
+    }, err => {
+      alert("Geolocation error: " + err.message);
+    });
+  }
+
+  // Load attendance records
+  async function loadRecords() {
+    const res = await fetch("/attendance_records");
+    const data = await res.json();
+    const tbody = document.getElementById("recordBody");
+    tbody.innerHTML = "";
+    data.attendance.forEach(r => {
+      const row = `<tr>
+        <td>${r.name}</td>
+        <td>${r.time}</td>
+        <td>${r.latitude || ""}</td>
+        <td>${r.longitude || ""}</td>
+        <td>${r.confidence ? r.confidence.toFixed(3) : ""}</td>
+      </tr>`;
+      tbody.innerHTML += row;
+    });
+  }
+
+  // Initial load
+  loadRecords();
+</script>
+</body>
+</html>
